@@ -25,6 +25,13 @@ document.getElementById('start-order-btn').addEventListener('click', () => {
   console.log("Go to Menu to start ordering");
 });
 
+// Account options handlers
+document.querySelectorAll('.account-options button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    console.log("Account option clicked:", btn.textContent);
+  });
+});
+
 // Bottom navigation handler
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#bottom-nav button').forEach(btn => {
