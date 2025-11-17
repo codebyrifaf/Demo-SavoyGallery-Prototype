@@ -121,11 +121,36 @@ if (!MOCK.bookings) MOCK.bookings = [];
 const CART = [];
 
 // Utility: Toast notification
-const ui = {
-  toast: function(message) {
-    console.log("Toast:", message);
-    alert(message); // Placeholder - will be replaced with proper toast later
+const ui = {};
+
+ui.toast = function(message) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '100px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = 'rgba(0, 0, 0, 0.85)';
+    toast.style.color = 'white';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '24px';
+    toast.style.zIndex = '10000';
+    toast.style.fontSize = '14px';
+    toast.style.fontWeight = '500';
+    toast.style.transition = 'opacity 0.3s ease';
+    toast.style.opacity = '0';
+    toast.style.pointerEvents = 'none';
+    document.body.appendChild(toast);
   }
+  
+  toast.textContent = message;
+  toast.style.opacity = '1';
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+  }, 3000);
 };
 
 // Header interactions will go here
@@ -359,8 +384,10 @@ function addToCart(product) {
   
   if (existingItem) {
     existingItem.quantity += 1;
+    ui.toast(`${product.name} quantity updated`);
   } else {
     CART.push({ ...product, quantity: 1 });
+    ui.toast(`${product.name} added to cart`);
   }
   
   renderCart();
@@ -441,17 +468,19 @@ cartCloseBtn.addEventListener('click', () => {
 // Cart checkout button
 cartCheckoutBtn.addEventListener('click', () => {
   if (CART.length === 0) {
-    console.log("Cart is empty");
+    ui.toast("Cart is empty");
     return;
   }
   
-  console.log("Checkout completed. Total items:", CART.length);
+  const itemCount = CART.reduce((sum, item) => sum + item.quantity, 0);
+  console.log("Checkout completed. Total items:", itemCount);
+  
   CART.length = 0; // Clear cart
   renderCart();
   cartDrawer.classList.add('hidden');
   
-  // Show success message (placeholder for toast)
-  alert("Order placed successfully!");
+  // Show success message
+  ui.toast("Order placed successfully! 🎉");
 });
 
 // Factory Tour Booking Modal
@@ -488,12 +517,12 @@ tourForm.addEventListener('submit', (e) => {
   console.log("Booking created:", booking);
   console.log("All bookings:", MOCK.bookings);
   
-  // Show success message
-  ui.toast("Booking successful!");
-  
   // Reset form and close modal
   e.target.reset();
   tourModal.classList.add('hidden');
+  
+  // Show success message
+  ui.toast("Tour booking confirmed! ✓");
 });
 
 // Initialize menu screen
