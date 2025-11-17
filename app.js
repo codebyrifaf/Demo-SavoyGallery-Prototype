@@ -2,6 +2,8 @@
 
 // Header interactions will go here
 
+// Future: render home screen dynamic content here
+
 // Bottom navigation handler
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#bottom-nav button').forEach(btn => {
