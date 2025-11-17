@@ -116,7 +116,119 @@ const MOCK = {
 
 // Header interactions will go here
 
-// Future: render home screen dynamic content here
+// Render Home Screen
+function renderHomeScreen() {
+  const homeScreen = document.getElementById('screen-home');
+  
+  // Clear existing static content
+  homeScreen.innerHTML = '';
+  
+  // Hero Banner - use first product as featured
+  const heroBanner = document.createElement('section');
+  heroBanner.className = 'hero-banner';
+  const heroProduct = MOCK.products[0];
+  heroBanner.innerHTML = `
+    <img src="${heroProduct.images[0]}" alt="${heroProduct.name}">
+    <div class="hero-overlay">
+      <h2>${heroProduct.name}</h2>
+      <p>${heroProduct.shortDesc}</p>
+    </div>
+  `;
+  homeScreen.appendChild(heroBanner);
+  
+  // Quick Actions
+  const quickActions = document.createElement('section');
+  quickActions.className = 'quick-actions';
+  const actions = [
+    { name: "Order", icon: "order-icon.svg" },
+    { name: "Locator", icon: "locator-icon.svg" },
+    { name: "Tours", icon: "tours-icon.svg" },
+    { name: "Loyalty", icon: "loyalty-icon.svg" }
+  ];
+  
+  actions.forEach(action => {
+    const btn = document.createElement('button');
+    btn.className = 'action-btn';
+    btn.innerHTML = `
+      <img src="assets/icons/${action.icon}" alt="${action.name}">
+      <span>${action.name}</span>
+    `;
+    btn.addEventListener('click', () => {
+      console.log(`${action.name} clicked`);
+    });
+    quickActions.appendChild(btn);
+  });
+  homeScreen.appendChild(quickActions);
+  
+  // Featured Flavors
+  const featuredFlavors = document.createElement('section');
+  featuredFlavors.className = 'featured-flavors';
+  
+  const title = document.createElement('h2');
+  title.textContent = 'Featured Flavors';
+  featuredFlavors.appendChild(title);
+  
+  const flavorScroll = document.createElement('div');
+  flavorScroll.className = 'flavor-scroll';
+  
+  MOCK.products.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
+      <div class="card-content">
+        <h3>${product.name}</h3>
+        <p class="card-desc">${product.shortDesc}</p>
+        <div class="card-footer">
+          <span class="price">${product.priceBDT} BDT</span>
+          <button class="add-btn" data-id="${product.id}">+</button>
+        </div>
+      </div>
+    `;
+    
+    // Add to cart button handler
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', () => {
+      console.log(`Added ${product.name} to cart`);
+    });
+    
+    flavorScroll.appendChild(card);
+  });
+  
+  featuredFlavors.appendChild(flavorScroll);
+  homeScreen.appendChild(featuredFlavors);
+  
+  // Today's Specials
+  const todaySpecials = document.createElement('section');
+  todaySpecials.className = 'today-specials';
+  
+  const specialTitle = document.createElement('h2');
+  specialTitle.textContent = "Today's Specials";
+  todaySpecials.appendChild(specialTitle);
+  
+  const specialCard = document.createElement('div');
+  specialCard.className = 'special-card';
+  
+  // Find a seasonal product for today's special
+  const seasonalProduct = MOCK.products.find(p => p.isSeasonal) || MOCK.products[3];
+  specialCard.innerHTML = `
+    <img src="${seasonalProduct.images[0]}" alt="${seasonalProduct.name}">
+    <div class="special-content">
+      <h3>${seasonalProduct.name}</h3>
+      <p>${seasonalProduct.fullDesc}</p>
+      <span class="price">${seasonalProduct.priceBDT} BDT</span>
+      <button class="order-btn">Order Now</button>
+    </div>
+  `;
+  
+  todaySpecials.appendChild(specialCard);
+  homeScreen.appendChild(todaySpecials);
+}
+
+// Initialize home screen on load
+document.addEventListener('DOMContentLoaded', () => {
+  renderHomeScreen();
+});
 
 // Future: menu screen rendering and filters
 const menuScreen = document.getElementById('screen-menu');
