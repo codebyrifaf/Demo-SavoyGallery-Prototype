@@ -20,6 +20,11 @@ menuCategoryButtons.forEach(btn => {
   });
 });
 
+// Future: redirect user to Menu screen when no orders
+document.getElementById('start-order-btn').addEventListener('click', () => {
+  console.log("Go to Menu to start ordering");
+});
+
 // Bottom navigation handler
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#bottom-nav button').forEach(btn => {

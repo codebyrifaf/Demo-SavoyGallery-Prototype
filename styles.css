@@ -271,3 +271,59 @@ body {
   border-radius: 8px;
   padding: 12px;
 }
+
+/* Orders Screen */
+#screen-orders {
+  padding-top: 12px;
+}
+
+.orders-header {
+  padding: 0 16px 16px 16px;
+}
+
+.orders-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.orders-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+  min-height: calc(100vh - 200px);
+}
+
+.orders-empty img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  background: #e5e5e5;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.orders-empty p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+#start-order-btn {
+  padding: 12px 32px;
+  background: #6b4423;
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#start-order-btn:active {
+  transform: scale(0.95);
+}
