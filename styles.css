@@ -391,3 +391,135 @@ body {
 .account-options button:active {
   background: #f5f5f5;
 }
+
+/* Product Detail Modal */
+#product-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#product-modal.hidden {
+  display: none;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.modal-content {
+  position: relative;
+  z-index: 2;
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+#modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+}
+
+#modal-close:hover {
+  background: #e0e0e0;
+}
+
+.modal-images {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-images::-webkit-scrollbar {
+  display: none;
+}
+
+.modal-images img {
+  width: 100%;
+  max-width: 280px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.modal-name {
+  font-size: 22px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.modal-fullDesc {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.modal-price {
+  font-size: 20px;
+  font-weight: 600;
+  color: #6b4423;
+  margin-bottom: 12px;
+}
+
+.modal-allergens {
+  font-size: 13px;
+  color: #999;
+  margin-bottom: 20px;
+}
+
+.modal-allergens::before {
+  content: "Allergens: ";
+  font-weight: 600;
+  color: #666;
+}
+
+#modal-add-to-cart {
+  width: 100%;
+  padding: 14px;
+  background: #6b4423;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+#modal-add-to-cart:active {
+  transform: scale(0.98);
+}

@@ -259,10 +259,19 @@ function renderMenu(category = 'all') {
       </div>
     `;
     
-    // Add to cart button handler
+    // Open modal when card is clicked (except the add button)
+    card.addEventListener('click', (e) => {
+      // Don't open modal if clicking the add button
+      if (!e.target.classList.contains('add-btn')) {
+        openProductModal(product);
+      }
+    });
+    
+    // Add to cart button handler (quick add without opening modal)
     const addBtn = card.querySelector('.add-btn');
-    addBtn.addEventListener('click', () => {
-      console.log("Add to cart - Product ID:", product.id, "Name:", product.name);
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent opening modal
+      console.log("Quick add to cart - Product ID:", product.id, "Name:", product.name);
     });
     
     productGrid.appendChild(card);
@@ -270,6 +279,53 @@ function renderMenu(category = 'all') {
   
   console.log(`Menu rendered with ${filtered.length} products (category: ${category})`);
 }
+
+// Product Detail Modal
+const productModal = document.getElementById('product-modal');
+const modalName = productModal.querySelector('.modal-name');
+const modalDesc = productModal.querySelector('.modal-fullDesc');
+const modalPrice = productModal.querySelector('.modal-price');
+const modalAllergens = productModal.querySelector('.modal-allergens');
+const modalImages = productModal.querySelector('.modal-images');
+const modalAddBtn = document.getElementById('modal-add-to-cart');
+const modalCloseBtn = document.getElementById('modal-close');
+const modalOverlay = productModal.querySelector('.modal-overlay');
+
+function openProductModal(product) {
+  // Populate modal with product data
+  modalName.textContent = product.name;
+  modalDesc.textContent = product.fullDesc;
+  modalPrice.textContent = product.priceBDT + ' BDT';
+  modalAllergens.textContent = product.allergens.join(', ') || 'None';
+  
+  // Render product images
+  modalImages.innerHTML = '';
+  product.images.forEach(src => {
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = product.name;
+    img.loading = 'lazy';
+    modalImages.appendChild(img);
+  });
+  
+  // Show modal
+  productModal.classList.remove('hidden');
+  
+  // Add to cart handler
+  modalAddBtn.onclick = () => {
+    console.log("Add to cart from modal - Product ID:", product.id, "Name:", product.name);
+    productModal.classList.add('hidden');
+  };
+}
+
+// Close modal handlers
+modalCloseBtn.addEventListener('click', () => {
+  productModal.classList.add('hidden');
+});
+
+modalOverlay.addEventListener('click', () => {
+  productModal.classList.add('hidden');
+});
 
 // Initialize menu screen
 renderMenu();
