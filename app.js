@@ -114,6 +114,9 @@ const MOCK = {
   ]
 };
 
+// Cart State
+const CART = [];
+
 // Header interactions will go here
 
 // Render Home Screen
@@ -189,7 +192,7 @@ function renderHomeScreen() {
     // Add to cart button handler
     const addBtn = card.querySelector('.add-btn');
     addBtn.addEventListener('click', () => {
-      console.log(`Added ${product.name} to cart`);
+      addToCart(product);
     });
     
     flavorScroll.appendChild(card);
@@ -271,7 +274,7 @@ function renderMenu(category = 'all') {
     const addBtn = card.querySelector('.add-btn');
     addBtn.addEventListener('click', (e) => {
       e.stopPropagation(); // Prevent opening modal
-      console.log("Quick add to cart - Product ID:", product.id, "Name:", product.name);
+      addToCart(product);
     });
     
     productGrid.appendChild(card);
@@ -313,7 +316,7 @@ function openProductModal(product) {
   
   // Add to cart handler
   modalAddBtn.onclick = () => {
-    console.log("Add to cart from modal - Product ID:", product.id, "Name:", product.name);
+    addToCart(product);
     productModal.classList.add('hidden');
   };
 }
@@ -325,6 +328,114 @@ modalCloseBtn.addEventListener('click', () => {
 
 modalOverlay.addEventListener('click', () => {
   productModal.classList.add('hidden');
+});
+
+// Cart Drawer
+const cartDrawer = document.getElementById('cart-drawer');
+const cartItemsContainer = document.getElementById('cart-items');
+const cartSubtotal = document.getElementById('cart-subtotal');
+const cartCloseBtn = document.getElementById('cart-close');
+const cartCheckoutBtn = document.getElementById('cart-checkout');
+
+function addToCart(product) {
+  // Check if product already exists in cart
+  const existingItem = CART.find(item => item.id === product.id);
+  
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    CART.push({ ...product, quantity: 1 });
+  }
+  
+  renderCart();
+  cartDrawer.classList.remove('hidden');
+  console.log("Cart updated:", CART);
+}
+
+function removeFromCart(productId) {
+  const index = CART.findIndex(item => item.id === productId);
+  if (index !== -1) {
+    CART.splice(index, 1);
+    renderCart();
+  }
+}
+
+function updateQuantity(productId, delta) {
+  const item = CART.find(item => item.id === productId);
+  if (item) {
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      renderCart();
+    }
+  }
+}
+
+function renderCart() {
+  cartItemsContainer.innerHTML = '';
+  
+  if (CART.length === 0) {
+    cartItemsContainer.innerHTML = '<div class="cart-empty">Your cart is empty</div>';
+    cartSubtotal.textContent = 'Subtotal: 0 BDT';
+    return;
+  }
+  
+  let subtotal = 0;
+  
+  CART.forEach(item => {
+    const itemTotal = item.priceBDT * item.quantity;
+    subtotal += itemTotal;
+    
+    const cartItem = document.createElement('div');
+    cartItem.className = 'cart-item';
+    cartItem.innerHTML = `
+      <img src="${item.images[0]}" alt="${item.name}" class="cart-item-image">
+      <div class="cart-item-details">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">${item.priceBDT} BDT × ${item.quantity} = ${itemTotal} BDT</div>
+      </div>
+      <div class="cart-item-controls">
+        <button class="qty-btn qty-minus" data-id="${item.id}">−</button>
+        <span class="cart-item-qty">${item.quantity}</span>
+        <button class="qty-btn qty-plus" data-id="${item.id}">+</button>
+      </div>
+    `;
+    
+    // Add event listeners for quantity buttons
+    cartItem.querySelector('.qty-minus').addEventListener('click', () => {
+      updateQuantity(item.id, -1);
+    });
+    
+    cartItem.querySelector('.qty-plus').addEventListener('click', () => {
+      updateQuantity(item.id, 1);
+    });
+    
+    cartItemsContainer.appendChild(cartItem);
+  });
+  
+  cartSubtotal.textContent = `Subtotal: ${subtotal} BDT`;
+}
+
+// Cart close button
+cartCloseBtn.addEventListener('click', () => {
+  cartDrawer.classList.add('hidden');
+});
+
+// Cart checkout button
+cartCheckoutBtn.addEventListener('click', () => {
+  if (CART.length === 0) {
+    console.log("Cart is empty");
+    return;
+  }
+  
+  console.log("Checkout completed. Total items:", CART.length);
+  CART.length = 0; // Clear cart
+  renderCart();
+  cartDrawer.classList.add('hidden');
+  
+  // Show success message (placeholder for toast)
+  alert("Order placed successfully!");
 });
 
 // Initialize menu screen
