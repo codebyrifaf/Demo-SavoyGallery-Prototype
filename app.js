@@ -114,8 +114,19 @@ const MOCK = {
   ]
 };
 
+// Initialize bookings array
+if (!MOCK.bookings) MOCK.bookings = [];
+
 // Cart State
 const CART = [];
+
+// Utility: Toast notification
+const ui = {
+  toast: function(message) {
+    console.log("Toast:", message);
+    alert(message); // Placeholder - will be replaced with proper toast later
+  }
+};
 
 // Header interactions will go here
 
@@ -158,6 +169,11 @@ function renderHomeScreen() {
     `;
     btn.addEventListener('click', () => {
       console.log(`${action.name} clicked`);
+      
+      // Handle Tours button - open booking modal
+      if (action.name === 'Tours') {
+        document.getElementById('tour-modal').classList.remove('hidden');
+      }
     });
     quickActions.appendChild(btn);
   });
@@ -436,6 +452,48 @@ cartCheckoutBtn.addEventListener('click', () => {
   
   // Show success message (placeholder for toast)
   alert("Order placed successfully!");
+});
+
+// Factory Tour Booking Modal
+const tourModal = document.getElementById('tour-modal');
+const tourCloseBtn = document.getElementById('tour-close');
+const tourForm = document.getElementById('tour-form');
+const tourOverlay = tourModal.querySelector('.modal-overlay');
+
+// Close tour modal
+tourCloseBtn.addEventListener('click', () => {
+  tourModal.classList.add('hidden');
+});
+
+tourOverlay.addEventListener('click', () => {
+  tourModal.classList.add('hidden');
+});
+
+// Handle tour form submission
+tourForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  const formData = new FormData(e.target);
+  const booking = {
+    id: Date.now(),
+    name: formData.get('name'),
+    phone: formData.get('phone'),
+    datetime: formData.get('datetime'),
+    pax: parseInt(formData.get('pax')),
+    createdAt: new Date().toISOString()
+  };
+  
+  // Add booking to mock data
+  MOCK.bookings.push(booking);
+  console.log("Booking created:", booking);
+  console.log("All bookings:", MOCK.bookings);
+  
+  // Show success message
+  ui.toast("Booking successful!");
+  
+  // Reset form and close modal
+  e.target.reset();
+  tourModal.classList.add('hidden');
 });
 
 // Initialize menu screen
