@@ -32,17 +32,30 @@ document.querySelectorAll('.account-options button').forEach(btn => {
   });
 });
 
+// Navigation function
+function navigateTo(tab) {
+  // Hide all screens
+  document.querySelectorAll('main').forEach(screen => {
+    screen.classList.add('hidden');
+  });
+
+  // Show correct one
+  const activeScreen = document.getElementById(`screen-${tab}`);
+  if (activeScreen) activeScreen.classList.remove('hidden');
+
+  // Update active nav button
+  document.querySelectorAll('#bottom-nav button').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === tab);
+  });
+
+  console.log("Navigated to:", tab);
+}
+
 // Bottom navigation handler
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#bottom-nav button').forEach(btn => {
     btn.addEventListener('click', () => {
-      console.log('Tab clicked:', btn.dataset.tab);
-      
-      // Remove active class from all buttons
-      document.querySelectorAll('#bottom-nav button').forEach(b => b.classList.remove('active'));
-      
-      // Add active class to clicked button
-      btn.classList.add('active');
+      navigateTo(btn.dataset.tab);
     });
   });
 });
