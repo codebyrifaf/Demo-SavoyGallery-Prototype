@@ -230,6 +230,50 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHomeScreen();
 });
 
+// Render Menu Screen
+const productGrid = document.querySelector('.product-grid');
+
+function renderMenu(category = 'all') {
+  // Clear existing products
+  productGrid.innerHTML = '';
+  
+  // Filter products by category
+  let filtered = MOCK.products;
+  if (category !== 'all') {
+    filtered = MOCK.products.filter(p => p.category === category);
+  }
+  
+  // Render filtered products
+  filtered.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
+      <div class="card-content">
+        <h3>${product.name}</h3>
+        <p class="card-desc">${product.shortDesc}</p>
+        <div class="card-footer">
+          <span class="price">${product.priceBDT} BDT</span>
+          <button class="add-btn" data-id="${product.id}">+</button>
+        </div>
+      </div>
+    `;
+    
+    // Add to cart button handler
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', () => {
+      console.log("Add to cart - Product ID:", product.id, "Name:", product.name);
+    });
+    
+    productGrid.appendChild(card);
+  });
+  
+  console.log(`Menu rendered with ${filtered.length} products (category: ${category})`);
+}
+
+// Initialize menu screen
+renderMenu();
+
 // Future: menu screen rendering and filters
 const menuScreen = document.getElementById('screen-menu');
 const menuCategoryButtons = document.querySelectorAll('.menu-categories button');
@@ -243,6 +287,9 @@ menuCategoryButtons.forEach(btn => {
     
     // Add active class to clicked button
     btn.classList.add('active');
+    
+    // Render menu with selected category
+    renderMenu(btn.dataset.cat);
   });
 });
 
