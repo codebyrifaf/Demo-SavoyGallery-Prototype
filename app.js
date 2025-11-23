@@ -266,6 +266,171 @@ ui.toast = function(message) {
 };
 
 // Header interactions will go here
+const searchBtn = document.querySelector('.header-right .icon-btn:first-child');
+if (searchBtn) {
+  searchBtn.addEventListener('click', () => {
+    navigateTo('menu');
+    setTimeout(() => {
+      showSearchBar();
+    }, 100);
+  });
+}
+
+function showSearchBar() {
+  const menuScreen = document.getElementById('screen-menu');
+  let searchBar = document.getElementById('search-bar');
+  
+  if (!searchBar) {
+    searchBar = document.createElement('div');
+    searchBar.id = 'search-bar';
+    searchBar.className = 'search-bar';
+    searchBar.innerHTML = `
+      <input type="text" id="search-input" placeholder="Search flavors..." autofocus>
+      <button id="search-close">×</button>
+    `;
+    
+    const menuCategories = menuScreen.querySelector('.menu-categories');
+    menuCategories.parentNode.insertBefore(searchBar, menuCategories);
+    
+    const searchInput = document.getElementById('search-input');
+    const searchClose = document.getElementById('search-close');
+    
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query) {
+        const filtered = MOCK.products.filter(p => 
+          p.name.toLowerCase().includes(query) || 
+          p.shortDesc.toLowerCase().includes(query)
+        );
+        renderFilteredProducts(filtered);
+      } else {
+        renderMenu('all');
+      }
+    });
+    
+    searchClose.addEventListener('click', () => {
+      searchBar.remove();
+      renderMenu('all');
+    });
+  }
+}
+
+function renderFilteredProducts(products) {
+  productGrid.innerHTML = '';
+  
+  if (products.length === 0) {
+    productGrid.innerHTML = '<div class="no-results">No products found</div>';
+    return;
+  }
+  
+  products.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
+      <div class="card-content">
+        <h3>${product.name}</h3>
+        <p class="card-desc">${product.shortDesc}</p>
+        <div class="card-footer">
+          <span class="price">${product.priceBDT} BDT</span>
+          <button class="add-btn" data-id="${product.id}">+</button>
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('add-btn')) {
+        openProductModal(product);
+      }
+    });
+    
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      addToCart(product);
+    });
+    
+    productGrid.appendChild(card);
+  });
+}
+
+function showSearchBar() {
+  const menuScreen = document.getElementById('screen-menu');
+  let searchBar = document.getElementById('search-bar');
+  
+  if (!searchBar) {
+    searchBar = document.createElement('div');
+    searchBar.id = 'search-bar';
+    searchBar.className = 'search-bar';
+    searchBar.innerHTML = `
+      <input type="text" id="search-input" placeholder="Search flavors..." autofocus>
+      <button id="search-close">×</button>
+    `;
+    
+    const menuCategories = menuScreen.querySelector('.menu-categories');
+    menuCategories.parentNode.insertBefore(searchBar, menuCategories);
+    
+    const searchInput = document.getElementById('search-input');
+    const searchClose = document.getElementById('search-close');
+    
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      if (query) {
+        const filtered = MOCK.products.filter(p => 
+          p.name.toLowerCase().includes(query) || 
+          p.shortDesc.toLowerCase().includes(query)
+        );
+        renderFilteredProducts(filtered);
+      } else {
+        renderMenu('all');
+      }
+    });
+    
+    searchClose.addEventListener('click', () => {
+      searchBar.remove();
+      renderMenu('all');
+    });
+  }
+}
+
+function renderFilteredProducts(products) {
+  productGrid.innerHTML = '';
+  
+  if (products.length === 0) {
+    productGrid.innerHTML = '<div class="no-results">No products found</div>';
+    return;
+  }
+  
+  products.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.innerHTML = `
+      <img src="${product.images[0]}" alt="${product.name}" loading="lazy">
+      <div class="card-content">
+        <h3>${product.name}</h3>
+        <p class="card-desc">${product.shortDesc}</p>
+        <div class="card-footer">
+          <span class="price">${product.priceBDT} BDT</span>
+          <button class="add-btn" data-id="${product.id}">+</button>
+        </div>
+      </div>
+    `;
+    
+    card.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('add-btn')) {
+        openProductModal(product);
+      }
+    });
+    
+    const addBtn = card.querySelector('.add-btn');
+    addBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      addToCart(product);
+    });
+    
+    productGrid.appendChild(card);
+  });
+}
 
 // Render Home Screen
 function renderHomeScreen() {
@@ -304,12 +469,35 @@ function renderHomeScreen() {
       <img src="assets/icons/${action.icon}" alt="${action.name}">
       <span>${action.name}</span>
     `;
+    
     btn.addEventListener('click', () => {
       console.log(`${action.name} clicked`);
       
       // Handle Tours button - open booking modal
       if (action.name === 'Tours') {
         document.getElementById('tour-modal').classList.remove('hidden');
+      }
+      
+      // Handle Locator button
+      if (action.name === 'Locator') {
+        navigateTo('locator');
+      }
+      
+      // Handle Loyalty button - navigate to account to see points
+      if (action.name === 'Loyalty') {
+        navigateTo('account');
+        // Scroll to stats section
+        setTimeout(() => {
+          const statsSection = document.querySelector('.account-stats');
+          if (statsSection) {
+            statsSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
+      }
+      
+      // Handle Order button
+      if (action.name === 'Order') {
+        navigateTo('menu');
       }
     });
     quickActions.appendChild(btn);
@@ -595,37 +783,9 @@ cartCheckoutBtn.addEventListener('click', () => {
     return;
   }
   
-  const itemCount = CART.reduce((sum, item) => sum + (item.qty || 1), 0);
-  const subtotal = CART.reduce((sum, item) => sum + (item.priceBDT * (item.qty || 1)), 0);
-  
-  // Create order
-  const order = {
-    id: generateOrderId(),
-    items: JSON.parse(JSON.stringify(CART)), // Deep copy
-    subtotal: subtotal,
-    itemCount: itemCount,
-    status: 'confirmed',
-    orderDate: new Date().toISOString(),
-    estimatedTime: '20-30 mins',
-    outlet: MOCK.outlets[0].name
-  };
-  
-  ORDERS.unshift(order); // Add to beginning
-  console.log("Order placed:", order);
-  console.log("All orders:", ORDERS);
-  
-  CART.length = 0; // Clear cart
-  renderCart();
+  // Navigate to checkout screen
   cartDrawer.classList.add('hidden');
-  
-  // Show success message
-  ui.toast("Order placed successfully! 🎉");
-  
-  // Refresh orders screen if currently visible
-  const ordersScreen = document.getElementById('screen-orders');
-  if (!ordersScreen.classList.contains('hidden')) {
-    renderOrdersScreen();
-  }
+  navigateTo('checkout');
 });
 
 // Factory Tour Booking Modal
@@ -691,6 +851,188 @@ menuCategoryButtons.forEach(btn => {
     renderMenu(btn.dataset.cat);
   });
 });
+
+// Render Outlet Locator Screen
+function renderLocatorScreen() {
+  const outletsList = document.querySelector('.outlets-list');
+  outletsList.innerHTML = '';
+  
+  MOCK.outlets.forEach(outlet => {
+    const card = document.createElement('div');
+    card.className = 'locator-outlet-card';
+    card.innerHTML = `
+      <div class="locator-outlet-header">
+        <h3>${outlet.name}</h3>
+        ${outlet.isFlagship ? '<span class="flagship-badge">Flagship</span>' : ''}
+      </div>
+      <div class="locator-outlet-details">
+        <div class="locator-detail">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 14.5C8 14.5 13.5 10 13.5 6C13.5 3.23858 11.2614 1 8.5 1C5.73858 1 3.5 3.23858 3.5 6C3.5 10 8 14.5 8 14.5Z" stroke="#6b4423" stroke-width="1.5"/>
+            <circle cx="8" cy="6" r="1.5" fill="#6b4423"/>
+          </svg>
+          <span>${outlet.address}</span>
+        </div>
+        <div class="locator-detail">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 14.5C11.5899 14.5 14.5 11.5899 14.5 8C14.5 4.41015 11.5899 1.5 8 1.5C4.41015 1.5 1.5 4.41015 1.5 8C1.5 11.5899 4.41015 14.5 8 14.5Z" stroke="#6b4423" stroke-width="1.5"/>
+            <path d="M8 4V8L10.5 9.5" stroke="#6b4423" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>${outlet.hours}</span>
+        </div>
+        <div class="locator-detail">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M1.5 3.5H14.5V12C14.5 12.8284 13.8284 13.5 13 13.5H3C2.17157 13.5 1.5 12.8284 1.5 12V3.5Z" stroke="#6b4423" stroke-width="1.5"/>
+            <path d="M5 1.5V5.5M11 1.5V5.5" stroke="#6b4423" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span>${outlet.phone}</span>
+        </div>
+      </div>
+      <div class="locator-actions">
+        <button class="locator-btn" onclick="window.open('https://maps.google.com/?q=${outlet.lat},${outlet.lng}', '_blank')">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 1.5L14.5 5.5V10.5L8 14.5L1.5 10.5V5.5L8 1.5Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M8 8.5V14.5M8 8.5L14.5 5.5M8 8.5L1.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Directions
+        </button>
+        <button class="locator-btn-secondary" onclick="window.location.href='tel:${outlet.phone}'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 3C2 2.44772 2.44772 2 3 2H5.15287C5.64171 2 6.0589 2.35341 6.13927 2.8356L6.87858 7.27147C6.95075 7.70451 6.73206 8.13397 6.3394 8.32929L4.79999 9.09899C5.61344 10.875 7.125 12.3866 8.90101 13.2L9.67071 11.6606C9.86603 11.2679 10.2955 11.0492 10.7285 11.1214L15.1644 11.8607C15.6466 11.9411 16 12.3583 16 12.8471V15C16 15.5523 15.5523 16 15 16H13C6.92487 16 2 11.0751 2 5V3Z" fill="#6b4423"/>
+          </svg>
+          Call
+        </button>
+      </div>
+    `;
+    outletsList.appendChild(card);
+  });
+}
+
+// Locator back button
+const locatorBackBtn = document.getElementById('locator-back');
+if (locatorBackBtn) {
+  locatorBackBtn.addEventListener('click', () => {
+    navigateTo('home');
+  });
+}
+
+// Render Checkout Screen
+function renderCheckoutScreen() {
+  const checkoutItems = document.getElementById('checkout-items');
+  const outletSelector = document.getElementById('outlet-selector');
+  const checkoutTotal = document.getElementById('checkout-total-amount');
+  
+  // Render checkout items
+  checkoutItems.innerHTML = '';
+  let subtotal = 0;
+  
+  CART.forEach(item => {
+    const qty = item.qty || 1;
+    const itemTotal = item.priceBDT * qty;
+    subtotal += itemTotal;
+    
+    const div = document.createElement('div');
+    div.className = 'checkout-item';
+    div.innerHTML = `
+      <div class="checkout-item-info">
+        <span class="checkout-item-name">${item.name}</span>
+        <span class="checkout-item-qty">×${qty}</span>
+      </div>
+      <span class="checkout-item-price">${itemTotal} BDT</span>
+    `;
+    checkoutItems.appendChild(div);
+  });
+  
+  checkoutTotal.textContent = subtotal + ' BDT';
+  
+  // Render outlets
+  outletSelector.innerHTML = '';
+  MOCK.outlets.forEach((outlet, index) => {
+    const label = document.createElement('label');
+    label.className = 'outlet-option';
+    label.innerHTML = `
+      <input type="radio" name="outlet" value="${outlet.id}" ${index === 0 ? 'checked' : ''}>
+      <div class="outlet-card">
+        <div class="outlet-info">
+          <span class="outlet-name">${outlet.name}</span>
+          ${outlet.isFlagship ? '<span class="flagship-badge">Flagship</span>' : ''}
+          <span class="outlet-address">${outlet.address}</span>
+          <span class="outlet-hours">⏰ ${outlet.hours}</span>
+        </div>
+      </div>
+    `;
+    outletSelector.appendChild(label);
+  });
+}
+
+// Checkout back button
+const checkoutBackBtn = document.getElementById('checkout-back');
+if (checkoutBackBtn) {
+  checkoutBackBtn.addEventListener('click', () => {
+    navigateTo('home');
+    cartDrawer.classList.remove('hidden');
+  });
+}
+
+// Place order button
+const placeOrderBtn = document.getElementById('place-order-btn');
+if (placeOrderBtn) {
+  placeOrderBtn.addEventListener('click', () => {
+    const customerName = document.getElementById('customer-name').value;
+    const customerPhone = document.getElementById('customer-phone').value;
+    
+    if (!customerName || !customerPhone) {
+      ui.toast('Please fill in your contact information');
+      return;
+    }
+    
+    const selectedOutlet = document.querySelector('input[name="outlet"]:checked');
+    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+    const selectedTime = document.querySelector('input[name="pickup-time"]:checked');
+    const orderNotes = document.getElementById('order-notes').value;
+    
+    const outlet = MOCK.outlets.find(o => o.id === parseInt(selectedOutlet.value));
+    
+    const itemCount = CART.reduce((sum, item) => sum + (item.qty || 1), 0);
+    const subtotal = CART.reduce((sum, item) => sum + (item.priceBDT * (item.qty || 1)), 0);
+    
+    // Create order
+    const order = {
+      id: generateOrderId(),
+      items: JSON.parse(JSON.stringify(CART)),
+      subtotal: subtotal,
+      itemCount: itemCount,
+      status: 'confirmed',
+      orderDate: new Date().toISOString(),
+      estimatedTime: selectedTime.value === 'asap' ? '20-30 mins' : 'Scheduled',
+      outlet: outlet.name,
+      customer: {
+        name: customerName,
+        phone: customerPhone
+      },
+      payment: selectedPayment.value,
+      notes: orderNotes
+    };
+    
+    ORDERS.unshift(order);
+    console.log('Order placed:', order);
+    
+    // Clear cart
+    CART.length = 0;
+    renderCart();
+    
+    // Clear form
+    document.getElementById('customer-name').value = '';
+    document.getElementById('customer-phone').value = '';
+    document.getElementById('order-notes').value = '';
+    
+    // Navigate to orders screen
+    navigateTo('orders');
+    
+    // Show success message
+    ui.toast('Order placed successfully! 🎉');
+  });
+}
 
 // Render Orders Screen
 function renderOrdersScreen() {
@@ -827,12 +1169,134 @@ document.getElementById('start-order-btn').addEventListener('click', () => {
   navigateTo('menu');
 });
 
+// QR Scanner button handler (home screen)
+const qrScannerBtn = document.getElementById('qr-scanner-btn');
+if (qrScannerBtn) {
+  qrScannerBtn.addEventListener('click', () => {
+    navigateTo('qr');
+  });
+}
+
+// QR Scanner button handler (bottom nav)
+const qrNavBtn = document.getElementById('qr-nav-btn');
+if (qrNavBtn) {
+  qrNavBtn.addEventListener('click', () => {
+    navigateTo('qr');
+  });
+}
+
+// Simulate QR code scan (for demo purposes)
+let scannedProducts = []; // Track scanned products to prevent duplicates
+
+window.simulateQRScan = function() {
+  // Generate random product code
+  const productCode = 'SG' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  
+  // Check if already scanned
+  if (scannedProducts.includes(productCode)) {
+    showToast('⚠️ This product has already been scanned');
+    return;
+  }
+  
+  // Random points between 50-200
+  const pointsEarned = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
+  
+  // Add scanning animation
+  const scanLine = document.querySelector('.scan-line');
+  if (scanLine) {
+    scanLine.style.animation = 'none';
+    setTimeout(() => {
+      scanLine.style.animation = 'scan 2s ease-in-out infinite';
+    }, 10);
+  }
+  
+  // Simulate scan delay
+  setTimeout(() => {
+    // Create a mock order to award points
+    const pointsOrder = {
+      id: Date.now() + '-qr',
+      items: [{ name: 'QR Scan Bonus', qty: 1, price: pointsEarned / 10 }],
+      total: pointsEarned / 10, // Since 10 points = 1 BDT
+      outlet: 'QR Scan',
+      payment: 'Loyalty Bonus',
+      status: 'Completed',
+      date: new Date().toLocaleDateString(),
+      isQRBonus: true
+    };
+    
+    ORDERS.push(pointsOrder);
+    scannedProducts.push(productCode);
+    
+    // Update stats
+    updateAccountStats();
+    
+    // Navigate back and show success
+    navigateTo('home');
+    showToast(`🎉 Success! Earned ${pointsEarned} loyalty points!`);
+  }, 1500);
+};
+
 // Account options handlers
 document.querySelectorAll('.account-options button').forEach(btn => {
   btn.addEventListener('click', () => {
-    console.log("Account option clicked:", btn.textContent);
+    const action = btn.dataset.action;
+    console.log('Account option clicked:', action);
+    
+    switch(action) {
+      case 'profile':
+        ui.toast('Profile editing coming soon');
+        break;
+      case 'outlets':
+        navigateTo('locator');
+        break;
+      case 'tours':
+        document.getElementById('tour-modal').classList.remove('hidden');
+        break;
+      case 'support':
+        ui.toast('Support: +880 1712-345678');
+        break;
+      case 'about':
+        ui.toast('Savoy Gallery - Premium Ice Cream Experience');
+        break;
+      case 'logout':
+        if (confirm('Are you sure you want to logout?')) {
+          ui.toast('Logged out successfully');
+        }
+        break;
+    }
   });
 });
+
+// Update account stats with loyalty points calculation
+function updateAccountStats() {
+  const statOrders = document.getElementById('stat-orders');
+  const statPoints = document.getElementById('stat-points');
+  const statRewards = document.getElementById('stat-rewards');
+  
+  if (statOrders) {
+    const orderCount = ORDERS.length;
+    
+    // Calculate loyalty points: 10 points per BDT spent
+    const totalPoints = ORDERS.reduce((sum, order) => {
+      return sum + Math.floor(order.total * 10);
+    }, 0);
+    
+    // Calculate rewards: 1 reward per 500 points
+    const rewardsEarned = Math.floor(totalPoints / 500);
+    
+    statOrders.textContent = orderCount;
+    if (statPoints) statPoints.textContent = totalPoints;
+    if (statRewards) statRewards.textContent = rewardsEarned;
+  }
+}
+
+// Edit profile button
+const editProfileBtn = document.querySelector('.edit-profile-btn');
+if (editProfileBtn) {
+  editProfileBtn.addEventListener('click', () => {
+    ui.toast('Profile editing coming soon');
+  });
+}
 
 // Navigation function
 function navigateTo(tab) {
@@ -849,11 +1313,28 @@ function navigateTo(tab) {
   if (tab === 'orders') {
     renderOrdersScreen();
   }
+  
+  // Render checkout screen if navigating to checkout
+  if (tab === 'checkout') {
+    renderCheckoutScreen();
+  }
+  
+  // Render locator screen if navigating to locator
+  if (tab === 'locator') {
+    renderLocatorScreen();
+  }
+  
+  // Update account stats if navigating to account
+  if (tab === 'account') {
+    updateAccountStats();
+  }
 
-  // Update active nav button
-  document.querySelectorAll('#bottom-nav button').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.tab === tab);
-  });
+  // Update active nav button (only for main tabs)
+  if (['home', 'menu', 'orders', 'account'].includes(tab)) {
+    document.querySelectorAll('#bottom-nav button').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+  }
 
   console.log("Navigated to:", tab);
 }
